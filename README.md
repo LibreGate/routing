@@ -1,30 +1,38 @@
-# RoscomVPN Routing
+<div align="center">
 
-Готовые конфигурации маршрутизации для [Happ](https://happ.su), [INCY](https://incy.cc) и [Mihomo](https://github.com/MetaCubeX/mihomo) (Clash Meta, Clash Mi и др.)
+| [RoscomVPN GeoIP](https://github.com/hydraponique/roscomvpn-geoip) | [RoscomVPN GeoSite](https://github.com/hydraponique/roscomvpn-geosite) | [**🚀 RoscomVPN Routing**](https://github.com/hydraponique/roscomvpn-routing) |
+|:---:|:---:|:---:|
+| ![Downloads](https://img.shields.io/github/downloads/hydraponique/roscomvpn-geoip/total.svg) ![jsDelivr](https://data.jsdelivr.com/v1/package/gh/hydraponique/roscomvpn-geoip/badge) | ![Downloads](https://img.shields.io/github/downloads/hydraponique/roscomvpn-geosite/total.svg) ![jsDelivr](https://data.jsdelivr.com/v1/package/gh/hydraponique/roscomvpn-geosite/badge) | ![Stars](https://img.shields.io/github/stars/hydraponique/roscomvpn-routing.svg) ![Happ](https://img.shields.io/badge/Happ-blue.svg) ![Mihomo](https://img.shields.io/badge/Mihomo-grey.svg) ![Incy](https://img.shields.io/badge/Incy-darkgreen.svg) |
+
+# 🚀 RoscomVPN Routing
+
+**Готовые конфигурации маршрутизации для [Happ](https://happ.su), [INCY](https://incy.cc) и [Mihomo](https://github.com/MetaCubeX/mihomo) (Clash Meta, Clash Mi и др.)**
 
 > Быстрый и универсальный роутинг: без дыр и утечки вашего сервера, "хирургическая" фильтрация, все нужное — разблокировано, а ненужное — заблокировано
 
-**Таргет:** Россия + Беларусь
+**Таргет:** 🇷🇺 Россия + 🇧🇾 Беларусь
+
+</div>
 
 ---
 
-## Установка для Happ
+## 📱 Установка для Happ
 
 | Способ | Ссылка | Описание |
 |--------|--------|----------|
-| Быстрая установка | [routing.help](https://routing.help) | Редирект на диплинк, открыть на устройстве |
-| DEFAULT.DEEPLINK | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/HAPP/DEFAULT.DEEPLINK) | Диплинк-ссылка в текстовом формате |
-| DEFAULT.JSON | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/HAPP/DEFAULT.JSON) | JSON-конфиг роутинга |
+| ⚡ Быстрая установка | [routing.help](https://routing.help) | Редирект на диплинк, открыть на устройстве |
+| 🔗 DEFAULT.DEEPLINK | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/HAPP/DEFAULT.DEEPLINK) | Диплинк-ссылка в текстовом формате |
+| 📊 DEFAULT.JSON | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/HAPP/DEFAULT.JSON) | JSON-конфиг роутинга |
 
-## Установка для INCY
+## 📱 Установка для INCY
 
 | Способ | Ссылка | Описание |
 |--------|--------|----------|
-| Быстрая установка | [incy.routing.help](https://incy.routing.help) | Редирект на диплинк, открыть на устройстве |
-| DEFAULT.DEEPLINK | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/INCY/DEFAULT.DEEPLINK) | Диплинк-ссылка в текстовом формате |
-| DEFAULT.JSON | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/INCY/DEFAULT.JSON) | JSON-конфиг роутинга |
+| ⚡ Быстрая установка | [incy.routing.help](https://incy.routing.help) | Редирект на диплинк, открыть на устройстве |
+| 🔗 DEFAULT.DEEPLINK | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/INCY/DEFAULT.DEEPLINK) | Диплинк-ссылка в текстовом формате |
+| 📊 DEFAULT.JSON | [Просмотр](https://raw.githubusercontent.com/hydraponique/roscomvpn-routing/refs/heads/main/INCY/DEFAULT.JSON) | JSON-конфиг роутинга |
 
-## Установка для Mihomo (Clash Meta)
+## 💻 Установка для Mihomo (Clash Meta)
 
 Готовые YAML-шаблоны в папке `MIHOMO/`:
 
@@ -37,9 +45,10 @@
 
 ---
 
-## Преимущества
+## ✨ Преимущества
 
-### Кастомный GeoIP — [GitHub](https://github.com/hydraponique/roscomvpn-geoip)
+<details open>
+<summary><b>🌎 Кастомный GeoIP — <a href="https://github.com/hydraponique/roscomvpn-geoip">GitHub</a></b></summary>
 
 Максимально уменьшенный geoip.dat — выпилено все, кроме кастомного списка `geoip:direct`, где:
 - ➕ Русские/белорусские CIDR-диапазоны из трёх независимых геобаз: GeoLite2 (MaxMind), IPinfo, DB-IP
@@ -50,51 +59,65 @@
 - ➖ DIFF-исключение [зарубежных CDN-сервисов](https://github.com/PentiumB/CDN-RuleSet) + кастомный список Hetzner и ZeroCDN (а именно их CIDR стран нашего таргета)
 - ➖ DIFF-исключение `0.0.0.0/8` из private списка (предотвращение утечки DNS на некоторых устройствах)
 
-### Кастомный Geosite — [GitHub](https://github.com/hydraponique/roscomvpn-geosite)
+</details>
+
+<details open>
+<summary><b>🌐 Кастомный Geosite — <a href="https://github.com/hydraponique/roscomvpn-geosite">GitHub</a></b></summary>
+
 - **Обновленные списки сервисов** — максимально оптимизированы под этот роутинг + дедупликация
 - **Минималистичный подход** — то, чего нет в конфиге роутинга, выпилено с корнем
 - **Облегченные списки** — разгружают ядро от фильтрации мусора и include-редиректов
 
----
-
-## Что роутится в DEFAULT-версии
-
-### BLOCK (блокировка)
-- **Домены слежки Windows** — отключаем телеметрию и слежку за пользователями
-- **BitTorrent DHT** — известные публичные DHT-серверы, для экономии трафика вашего сервера и успокоения хостера
-- **Реклама VK Company** — отключаем рекламу в ВК Видео и ВК Музыке
-
-### DIRECT (напрямую)
-- **Русские/белорусские** домены и CIDR-диапазоны (за исключением РКН-списков + РФ активов зарубежных CDN-сервисов)
-- **"Казенные" сервисы РФ и CDN** — VK, OK, Mail.Ru, Яндекс, CDNVideo (включая их зарубежные активы на зарубежных IP)
-- **Сервера обновлений и пуш-уведомлений** — Apple, Microsoft, Android/Google Play (корректная работа устройства + экономия трафика сервера)
-- **Все существующие банки РФ и их зарубежные домены** — вытащены с сайта ЦБ РФ + собрано саморезолвингом
-- **Игровые платформы** — Steam, Epic Games, Riot Games, Escape from Tarkov (экономия трафика сервера + проблемы при пуске через прокси)
-- **Faceit** — фикс для РФ игроков, увеличиваем количество доступных локаций серверов
-- **Twitch** — экономия трафика сервера
-- **Pinterest** — блокировка рекламы на сервисе
-
-### PROXY (через VPN)
-- **YouTube** — борьба с ТСПУ и банами РКН
-- **Telegram** — борьба с ТСПУ и банами РКН
-- **GitHub** — борьба с ТСПУ и банами РКН
-- **Twitch-ads** — возвращаем полное качество (Source) стримов с блокировкой рекламы
-- **Весь остальной глобальный интернет** — все, чего нет в других списках, включая все зарубежные CDN
+</details>
 
 ---
 
-## DNS
+## 🗺 Что роутится в DEFAULT-версии
+
+### 🔴 BLOCK (блокировка)
+| Что | Зачем |
+|-----|-------|
+| 🚫 **Домены слежки Windows** | Отключаем телеметрию и слежку за пользователями |
+| 🚫 **BitTorrent DHT** | Известные публичные DHT-серверы, для экономии трафика вашего сервера и успокоения хостера |
+| 🚫 **Реклама VK Company** | Отключаем рекламу в ВК Видео и ВК Музыке |
+
+### 🟢 DIRECT (напрямую)
+| Что | Зачем |
+|-----|-------|
+| ✅ **Русские/белорусские** домены и CIDR | За исключением РКН-списков + РФ активов зарубежных CDN-сервисов |
+| ✅ **"Казенные" сервисы РФ и CDN** | VK, OK, Mail.Ru, Яндекс, CDNVideo (включая зарубежные активы) |
+| ✅ **Обновления и пуши** | Apple, Microsoft, Android/Google Play — корректная работа устройства + экономия трафика |
+| ✅ **Все банки РФ** | Вытащены с сайта ЦБ РФ + собрано саморезолвингом, включая зарубежные домены |
+| ✅ **Игровые платформы** | Steam, Epic Games, Riot Games, Escape from Tarkov — экономия трафика + проблемы через прокси |
+| ✅ **Faceit** | Фикс для РФ игроков, увеличиваем количество доступных локаций серверов |
+| ✅ **Twitch** | Экономия трафика сервера |
+| ✅ **Pinterest** | Блокировка рекламы на сервисе |
+
+### 🔵 PROXY (через VPN)
+| Что | Зачем |
+|-----|-------|
+| 🌐 **YouTube** | Борьба с ТСПУ и банами РКН |
+| 🌐 **Telegram** | Борьба с ТСПУ и банами РКН |
+| 🌐 **GitHub** | Борьба с ТСПУ и банами РКН |
+| 🌐 **Twitch-ads** | Возвращаем полное качество (Source) стримов с блокировкой рекламы |
+| 🌐 **Весь остальной интернет** | Все, чего нет в других списках, включая все зарубежные CDN |
+
+---
+
+## 🇷🇺 DNS
 
 | Назначение | Сервер | Зачем |
-|------------|--------|-------|
-| Domestic (direct) | [Яндекс DNS](https://dns.yandex.ru/) `77.88.8.8` | Для работы ВЕЗДЕ в РФ — без вариантов в реалиях БС, шатдаунов и ТСПУ. Низкий пинг в РФ |
-| Remote (proxy) | [Google Public DNS](https://developers.google.com/speed/public-dns/) `8.8.8.8` | Резолвинг-DNS для проксируемого трафика |
+|:----------:|--------|-------|
+| 🏠 Domestic (direct) | [Яндекс DNS](https://dns.yandex.ru/) `77.88.8.8` | Для работы ВЕЗДЕ в РФ — без вариантов в реалиях БС, шатдаунов и ТСПУ. Низкий пинг в РФ |
+| 🌍 Remote (proxy) | [Google Public DNS](https://developers.google.com/speed/public-dns/) `8.8.8.8` | Резолвинг-DNS для проксируемого трафика |
 
 ---
 
-## Интеграция с панелями (ADDON_AUTOROUTING)
+## 🔌 Интеграция с панелями (ADDON_AUTOROUTING)
 
-Готовые модули для автоматической инъекции роутинга в пользовательские подписки:
+> [!NOTE]
+> Готовые модули для автоматической инъекции роутинга в пользовательские подписки.
+> Модули `subscription.py` монтируются в контейнер панели и автоматически подставляют актуальные geoip.dat/geosite.dat в подписки пользователей.
 
 | Панель | Формат | Описание |
 |--------|--------|----------|
@@ -105,24 +128,27 @@
 | [Marzneshin](ADDON_AUTOROUTING/Marzneshin%20NON-JSON/) | Non-JSON | `subscription.py` для стандартных подписок |
 | [Remnawave](ADDON_AUTOROUTING/Remnawave/) | API | Контейнер для автообновления роутинга через API |
 
-Модули `subscription.py` монтируются в контейнер панели и автоматически подставляют актуальные geoip.dat/geosite.dat в подписки пользователей.
-
 ---
 
-## Автообновление
+## 🔄 Автообновление
 
-Конфиги автоматически обновляются при выходе новых релизов [roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip) и [roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite). GitHub Actions:
+> [!IMPORTANT]
+> Конфиги автоматически обновляются при выходе новых релизов [roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip) и [roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite)
+
+GitHub Actions:
 - Проверяет теги апстрим-репозиториев
 - Обновляет URL и таймстемпы в JSON-конфигах
 - Генерирует base64-диплинки для Happ и INCY
 - Коммитит изменения автоматически
 
-## Связанные проекты
+## 🔗 Связанные проекты
 
 - [roscomvpn-geoip](https://github.com/hydraponique/roscomvpn-geoip) — IP-диапазоны (geoip.dat)
 - [roscomvpn-geosite](https://github.com/hydraponique/roscomvpn-geosite) — доменные списки (geosite.dat)
 
 ---
+
+<div align="center">
 
 > **Ставь ⭐** и не пропусти регулярные обновления для поддержания актуальности списков и оптимальной производительности
 
@@ -130,3 +156,5 @@
 
 ##### Спасибо Всем за поддержку!
 ###### Сделано с ❤️ к свободному интернету!
+
+</div>
