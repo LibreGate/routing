@@ -412,7 +412,7 @@ rules:
   # --- Системные / приватные адреса ---
   - RULE-SET,private-ips,DIRECT,no-resolve         # приватные IP — всегда напрямую, без DNS
   - IP-CIDR,::/0,REJECT-DROP,no-resolve            # весь IPv6-трафик, не попавший в fake-ip — блок
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT-DROP # QUIC/DoQ — принудительно через TCP
+  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT-DROP # QUIC — принудительно через TCP
   - RULE-SET,private-domains,DIRECT                # локальные домены — напрямую
 
   # --- Блокировки ---
