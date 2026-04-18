@@ -1,217 +1,132 @@
 name: Update Routing Configs
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "README.md"
-      - ".gitignore"
-      - "LICENSE"
-  repository_dispatch:
-    types: [ update-routing-configs ]
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - "README.md"
+            - ".gitignore"
+            - "LICENSE"
+    repository_dispatch:
+        types: [ update-routing-configs ]
 
 permissions:
-  contents: write
+    contents: write
 
 jobs:
-  update:
-    runs-on: ubuntu-latest
-    outputs:
-      happ_default: ${{ steps.deeplinks.outputs.happ_default }}
-      happ_whitelist: ${{ steps.deeplinks.outputs.happ_whitelist }}
-      happ_json: ${{ steps.deeplinks.outputs.happ_json }}
-      incy_default: ${{ steps.deeplinks.outputs.incy_default }}
-      incy_whitelist: ${{ steps.deeplinks.outputs.incy_whitelist }}
-      incy_json: ${{ steps.deeplinks.outputs.incy_json }}
+    update:
+        runs-on: ubuntu-latest
+        outputs:
+            happ_default: ${{ steps.deeplinks.outputs.happ_default }}
+            happ_whitelist: ${{ steps.deeplinks.outputs.happ_whitelist }}
+            happ_json: ${{ steps.deeplinks.outputs.happ_json }}
 
-    steps:
-      - uses: actions/checkout@v6
+        steps:
+            - uses: actions/checkout@v6
 
-      - name: Update HAPP configs
-        shell: bash
-        run: |
-          set -euo pipefail
-          export TZ=UTC
+            - name: Update HAPP configs
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  export TZ=UTC
 
-          GEOIP_REPO="hydraponique/roscomvpn-geoip"
-          GEOSITE_REPO="hydraponique/roscomvpn-geosite"
+                  GEOIP_REPO="hydraponique/roscomvpn-geoip"
+                  GEOSITE_REPO="hydraponique/roscomvpn-geosite"
 
-          latest_tag() {
-            git ls-remote --tags "https://github.com/${1}.git" \
-              | awk '{print $2}' \
-              | sed -E 's@refs/tags/@@; s@\^\{\}@@' \
-              | grep -E '^[0-9]{12}$' \
-              | sort -r \
-              | head -n 1
-          }
+                  latest_tag() {
+                    git ls-remote --tags "https://github.com/${1}.git" \
+                      | awk '{print $2}' \
+                      | sed -E 's@refs/tags/@@; s@\^\{\}@@' \
+                      | grep -E '^[0-9]{12}$' \
+                      | sort -r \
+                      | head -n 1
+                  }
 
-          epoch_to_tag_utc() {
-            local e="${1:-0}"
-            if [[ "$e" =~ ^[0-9]+$ ]] && (( e > 0 )); then
-              date -u -d "@$e" +%Y%m%d%H%M
-            else
-              printf '000000000000'
-            fi
-          }
+                  epoch_to_tag_utc() {
+                    local e="${1:-0}"
+                    if [[ "$e" =~ ^[0-9]+$ ]] && (( e > 0 )); then
+                      date -u -d "@$e" +%Y%m%d%H%M
+                    else
+                      printf '000000000000'
+                    fi
+                  }
 
-          current_epoch="$(jq -r '.LastUpdated // empty' HAPP/DEFAULT.JSON 2>/dev/null || true)"
-          [[ "$current_epoch" =~ ^[0-9]+$ ]] || current_epoch="0"
-          current_tag="$(epoch_to_tag_utc "$current_epoch")"
+                  current_epoch="$(jq -r '.LastUpdated // empty' HAPP/DEFAULT.JSON 2>/dev/null || true)"
+                  [[ "$current_epoch" =~ ^[0-9]+$ ]] || current_epoch="0"
+                  current_tag="$(epoch_to_tag_utc "$current_epoch")"
 
-          geoip_tag="$(latest_tag "$GEOIP_REPO")"
-          geosite_tag="$(latest_tag "$GEOSITE_REPO")"
-          [[ -n "$geoip_tag" && -n "$geosite_tag" ]]
+                  geoip_tag="$(latest_tag "$GEOIP_REPO")"
+                  geosite_tag="$(latest_tag "$GEOSITE_REPO")"
+                  [[ -n "$geoip_tag" && -n "$geosite_tag" ]]
 
-          max_tag="$(printf "%s\n%s\n" "$geoip_tag" "$geosite_tag" | sort -r | head -n 1)"
+                  max_tag="$(printf "%s\n%s\n" "$geoip_tag" "$geosite_tag" | sort -r | head -n 1)"
 
-          if [[ "$current_tag" < "$max_tag" ]]; then
-            now_epoch="$(date -u +%s)"
-            geoip_url="https://cdn.jsdelivr.net/gh/${GEOIP_REPO}@${geoip_tag}/release/geoip.dat"
-            geosite_url="https://cdn.jsdelivr.net/gh/${GEOSITE_REPO}@${geosite_tag}/release/geosite.dat"
+                  if [[ "$current_tag" < "$max_tag" ]]; then
+                    now_epoch="$(date -u +%s)"
+                    geoip_url="https://cdn.jsdelivr.net/gh/${GEOIP_REPO}@${geoip_tag}/release/geoip.dat"
+                    geosite_url="https://cdn.jsdelivr.net/gh/${GEOSITE_REPO}@${geosite_tag}/release/geosite.dat"
 
-            curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geoip_url" >/dev/null
-            curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geosite_url" >/dev/null
+                    curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geoip_url" >/dev/null
+                    curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geosite_url" >/dev/null
 
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              HAPP/DEFAULT.JSON > "$tmp"
-            mv "$tmp" HAPP/DEFAULT.JSON
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              HAPP/WHITELIST.JSON > "$tmp"
-            mv "$tmp" HAPP/WHITELIST.JSON
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              HAPP/JSONSUB.JSON > "$tmp"
-            mv "$tmp" HAPP/JSONSUB.JSON
-          fi
+                    tmp="$(mktemp)"
+                    jq \
+                      --arg ts "$now_epoch" \
+                      --arg geoip "$geoip_url" \
+                      --arg geosite "$geosite_url" \
+                      '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
+                      HAPP/DEFAULT.JSON > "$tmp"
+                    mv "$tmp" HAPP/DEFAULT.JSON
+                    tmp="$(mktemp)"
+                    jq \
+                      --arg ts "$now_epoch" \
+                      --arg geoip "$geoip_url" \
+                      --arg geosite "$geosite_url" \
+                      '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
+                      HAPP/WHITELIST.JSON > "$tmp"
+                    mv "$tmp" HAPP/WHITELIST.JSON
+                    tmp="$(mktemp)"
+                    jq \
+                      --arg ts "$now_epoch" \
+                      --arg geoip "$geoip_url" \
+                      --arg geosite "$geosite_url" \
+                      '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
+                      HAPP/JSONSUB.JSON > "$tmp"
+                    mv "$tmp" HAPP/JSONSUB.JSON
+                  fi
 
-          default_b64="$(jq -c . HAPP/DEFAULT.JSON | base64 -w 0)"
-          whitelist_b64="$(jq -c . HAPP/WHITELIST.JSON | base64 -w 0)"
-          jsonsub_b64="$(jq -c . HAPP/JSONSUB.JSON | base64 -w 0)"
+                  default_b64="$(jq -c . HAPP/DEFAULT.JSON | base64 -w 0)"
+                  whitelist_b64="$(jq -c . HAPP/WHITELIST.JSON | base64 -w 0)"
+                  jsonsub_b64="$(jq -c . HAPP/JSONSUB.JSON | base64 -w 0)"
 
-          printf 'happ://routing/onadd/%s\n' "$default_b64" > HAPP/DEFAULT.DEEPLINK
-          printf 'happ://routing/onadd/%s\n' "$whitelist_b64" > HAPP/WHITELIST.DEEPLINK
-          printf 'happ://routing/onadd/%s\n' "$jsonsub_b64" > HAPP/JSONSUB.DEEPLINK
+                  printf 'happ://routing/onadd/%s\n' "$default_b64" > HAPP/DEFAULT.DEEPLINK
+                  printf 'happ://routing/onadd/%s\n' "$whitelist_b64" > HAPP/WHITELIST.DEEPLINK
+                  printf 'happ://routing/onadd/%s\n' "$jsonsub_b64" > HAPP/JSONSUB.DEEPLINK
 
-      - name: Update INCY configs
-        shell: bash
-        run: |
-          set -euo pipefail
-          export TZ=UTC
+            - name: Commit and push changes
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  export TZ=UTC
 
-          GEOIP_REPO="hydraponique/roscomvpn-geoip"
-          GEOSITE_REPO="hydraponique/roscomvpn-geosite"
+                  git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
 
-          latest_tag() {
-            git ls-remote --tags "https://github.com/${1}.git" \
-              | awk '{print $2}' \
-              | sed -E 's@refs/tags/@@; s@\^\{\}@@' \
-              | grep -E '^[0-9]{12}$' \
-              | sort -r \
-              | head -n 1
-          }
+                  git add HAPP/DEFAULT.JSON HAPP/WHITELIST.JSON HAPP/JSONSUB.JSON HAPP/DEFAULT.DEEPLINK HAPP/WHITELIST.DEEPLINK HAPP/JSONSUB.DEEPLINK
 
-          epoch_to_tag_utc() {
-            local e="${1:-0}"
-            if [[ "$e" =~ ^[0-9]+$ ]] && (( e > 0 )); then
-              date -u -d "@$e" +%Y%m%d%H%M
-            else
-              printf '000000000000'
-            fi
-          }
+                  if git diff --cached --quiet; then
+                    exit 0
+                  fi
 
-          current_epoch="$(jq -r '.LastUpdated // empty' INCY/DEFAULT.JSON 2>/dev/null || true)"
-          [[ "$current_epoch" =~ ^[0-9]+$ ]] || current_epoch="0"
-          current_tag="$(epoch_to_tag_utc "$current_epoch")"
+                  git commit -m "$(date -u +%Y%m%d%H%M)"
+                  git push
 
-          geoip_tag="$(latest_tag "$GEOIP_REPO")"
-          geosite_tag="$(latest_tag "$GEOSITE_REPO")"
-          [[ -n "$geoip_tag" && -n "$geosite_tag" ]]
-
-          max_tag="$(printf "%s\n%s\n" "$geoip_tag" "$geosite_tag" | sort -r | head -n 1)"
-
-          if [[ "$current_tag" < "$max_tag" ]]; then
-            now_epoch="$(date -u +%s)"
-            geoip_url="https://cdn.jsdelivr.net/gh/${GEOIP_REPO}/release/geoip.dat"
-            geosite_url="https://cdn.jsdelivr.net/gh/${GEOSITE_REPO}/release/geosite.dat"
-
-            curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geoip_url" >/dev/null
-            curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused -I "$geosite_url" >/dev/null
-
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              INCY/DEFAULT.JSON > "$tmp"
-            mv "$tmp" INCY/DEFAULT.JSON
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              INCY/WHITELIST.JSON > "$tmp"
-            mv "$tmp" INCY/WHITELIST.JSON
-            tmp="$(mktemp)"
-            jq \
-              --arg ts "$now_epoch" \
-              --arg geoip "$geoip_url" \
-              --arg geosite "$geosite_url" \
-              '.LastUpdated = $ts | .Geoipurl = $geoip | .Geositeurl = $geosite' \
-              INCY/JSONSUB.JSON > "$tmp"
-            mv "$tmp" INCY/JSONSUB.JSON
-          fi
-
-          default_b64="$(jq -c . INCY/DEFAULT.JSON | base64 -w 0)"
-          whitelist_b64="$(jq -c . INCY/WHITELIST.JSON | base64 -w 0)"
-          jsonsub_b64="$(jq -c . INCY/JSONSUB.JSON | base64 -w 0)"
-
-          printf 'incy://routing/onadd/%s\n' "$default_b64" > INCY/DEFAULT.DEEPLINK
-          printf 'incy://routing/onadd/%s\n' "$whitelist_b64" > INCY/WHITELIST.DEEPLINK
-          printf 'incy://routing/onadd/%s\n' "$jsonsub_b64" > INCY/JSONSUB.DEEPLINK
-
-      - name: Commit and push changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          export TZ=UTC
-
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-          git add HAPP/DEFAULT.JSON HAPP/WHITELIST.JSON HAPP/JSONSUB.JSON HAPP/DEFAULT.DEEPLINK HAPP/WHITELIST.DEEPLINK HAPP/JSONSUB.DEEPLINK INCY/DEFAULT.JSON INCY/WHITELIST.JSON INCY/JSONSUB.JSON INCY/DEFAULT.DEEPLINK INCY/WHITELIST.DEEPLINK INCY/JSONSUB.DEEPLINK
-
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-
-          git commit -m "$(date -u +%Y%m%d%H%M)"
-          git push
-
-      - name: Export deeplinks
-        id: deeplinks
-        shell: bash
-        run: |
-          echo "happ_default=$(tr -d '\n\r' < HAPP/DEFAULT.DEEPLINK)" >> "$GITHUB_OUTPUT"
-          echo "happ_whitelist=$(tr -d '\n\r' < HAPP/WHITELIST.DEEPLINK)" >> "$GITHUB_OUTPUT"
-          echo "happ_json=$(tr -d '\n\r' < HAPP/JSONSUB.DEEPLINK)" >> "$GITHUB_OUTPUT"
-          echo "incy_default=$(tr -d '\n\r' < INCY/DEFAULT.DEEPLINK)" >> "$GITHUB_OUTPUT"
-          echo "incy_whitelist=$(tr -d '\n\r' < INCY/WHITELIST.DEEPLINK)" >> "$GITHUB_OUTPUT"
-          echo "incy_json=$(tr -d '\n\r' < INCY/JSONSUB.DEEPLINK)" >> "$GITHUB_OUTPUT"
+            - name: Export deeplinks
+              id: deeplinks
+              shell: bash
+              run: |
+                  echo "happ_default=$(tr -d '\n\r' < HAPP/DEFAULT.DEEPLINK)" >> "$GITHUB_OUTPUT"
+                  echo "happ_whitelist=$(tr -d '\n\r' < HAPP/WHITELIST.DEEPLINK)" >> "$GITHUB_OUTPUT"
+                  echo "happ_json=$(tr -d '\n\r' < HAPP/JSONSUB.DEEPLINK)" >> "$GITHUB_OUTPUT"
